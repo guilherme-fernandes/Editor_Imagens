@@ -94,7 +94,7 @@ void grayscale (Img *img) {
 	}
 }
 
-void rotaciona (Img *img) {
+void rotaciona (Img *img, int opc) {
 
 	int i,j,k;
 	Img img_temp;
@@ -104,14 +104,135 @@ void rotaciona (Img *img) {
 
 	cria_matriz (&img_temp);
 
-	for (k=img->nc-1, i=0; i<img->nl, k>=0; i++, k--) {
-		for (j=0; j < img->nc; j++) {
-			img_temp.cor[j][k] = img->cor[i][j];
+	if (opc == 1) {
+		for (i=0; i<img->nl; i++) {
+			for (j=0; j < img->nc; j++) {                                  // Gira 90° para a esquerda (Antihorário) 
+				img_temp.cor[img->nc-j-1][i].r = img->cor[i][j].r;
+				img_temp.cor[img->nc-j-1][i].g = img->cor[i][j].g;
+				img_temp.cor[img->nc-j-1][i].b = img->cor[i][j].b;
+			}	
 		}
 	}
 
-	free(img->cor);
-	img->cor = img_temp.cor;
+	else if (opc == 2) {
+		for (i=0; i<img->nl; i++) {
+			for (j=0; j < img->nc; j++) {                                    // Gira 90° para a Direita (Horário)
+				img_temp.cor[j][img->nl-i-1].r = img->cor[i][j].r;
+				img_temp.cor[j][img->nl-i-1].g = img->cor[i][j].g;
+				img_temp.cor[j][img->nl-i-1].b = img->cor[i][j].b;
+			}	
+		}
+	}
+
+	else if (opc == 3) {
+
+		free (img_temp.cor);
+
+		img_temp.nl = img->nl;
+		img_temp.nc = img->nc;
+
+		cria_matriz (&img_temp);
+
+		printf("%d\t%d\n", img_temp.nl, img_temp.nc);
+
+		for (i=0; i<img->nl; i++) {												// Gira imagem 180°
+			for (j=0; j < img->nc; j++) {
+				img_temp.cor[img->nl-i-1][img->nc-j-1].r = img->cor[i][j].r;
+				img_temp.cor[img->nl-i-1][img->nc-j-1].g = img->cor[i][j].g;
+				img_temp.cor[img->nl-i-1][img->nc-j-1].b = img->cor[i][j].b;
+			}	
+		}
+	}
+
+	else {
+		printf("DIREÇÃO INVALIDA\n");
+	}
+
+	free (img->cor);
+
 	img->nc = img_temp.nc;
 	img->nl = img_temp.nl;
+
+	cria_matriz (img);
+
+	for (i=0; i<img->nl; i++) {
+		for (j=0; j < img->nc; j++) {
+				img->cor[i][j].r = img_temp.cor[i][j].r;
+				img->cor[i][j].g = img_temp.cor[i][j].g;
+				img->cor[i][j].b = img_temp.cor[i][j].b;
+			}	
+		}
+	}
+
+void amplia (Img *img, int zoom) {
+	int i,j,k,l;
+	Img img_temp;
+
+	img_temp.nl = img->nl * zoom;
+	img_temp.nc = img->nc * zoom;
+	
+	cria_matriz (&img_temp);
+ 
+		for (i=0,k=0; i<img->nl,k<img_temp.nl; k++) {
+				if (k%zoom == 0  && k!=0) {
+					i++;
+				}
+			for (j=0,l=0;j<img->nc, l<img_temp.nc; l++) {			
+					if (l%zoom==0 && l!=0) {
+						j++;
+					}
+					img_temp.cor[k][l].r = img->cor[i][j].r;
+					img_temp.cor[k][l].g = img->cor[i][j].g;
+					img_temp.cor[k][l].b = img->cor[i][j].b;
+			}
+		}
+
+	free (img->cor);
+	img->nl = img_temp.nl;
+	img->nc = img_temp.nc;
+
+	cria_matriz (img);
+
+	for (i=0; i<img->nl; i++) {
+		for (j=0; j < img->nc; j++) {
+				img->cor[i][j].r = img_temp.cor[i][j].r;
+				img->cor[i][j].g = img_temp.cor[i][j].g;
+				img->cor[i][j].b = img_temp.cor[i][j].b;
+		}	
+	}
+
+}
+
+void reduz (Img *img, int zoom) {
+
+	int i, j, k, l,mediar=0, mediag=0, mediab=0;
+
+	Img img_temp;
+
+	img_temp.nl = img->nl / zoom;
+	img_temp.nc = img->nc / zoom;
+	
+	cria_matriz (&img_temp);
+
+	for (i = 0, k = 1; i<img_temp.nl, k<img->nl; i++ ,k+=zoom) {
+		for (j=0, l = 1; j<img_temp.nc, l<img->nc; j++, l+=zoom) {
+			img_temp.cor[i][j].r = (img->cor[k-1][l-1].r + img->cor[k-1][l].r + img->cor[k][l-1].r + img->cor[k][l].r)/(zoom*zoom);
+			img_temp.cor[i][j].g = (img->cor[k-1][l-1].g + img->cor[k-1][l].g + img->cor[k][l-1].g + img->cor[k][l].g)/(zoom*zoom);
+			img_temp.cor[i][j].b = (img->cor[k-1][l-1].b + img->cor[k-1][l].b + img->cor[k][l-1].b + img->cor[k][l].b)/(zoom*zoom);	
+		}
+	}
+
+	free (img->cor);
+	img->nl = img_temp.nl;
+	img->nc = img_temp.nc;
+
+	cria_matriz (img);
+
+	for (i=0; i<img->nl; i++) {
+		for (j=0; j < img->nc; j++) {
+				img->cor[i][j].r = img_temp.cor[i][j].r;
+				img->cor[i][j].g = img_temp.cor[i][j].g;
+				img->cor[i][j].b = img_temp.cor[i][j].b;
+		}	
+	}
 }

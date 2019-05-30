@@ -24,16 +24,14 @@ void salva_img (Img *img);
 
 void grayscale(Img *img);
 
-//void amplia (Img *img, int qnt);
+void amplia (Img *img, int zoom);
 
-//void reduz (Img *img, int qnt);
+void reduz (Img *img, int zoom);
 
-void rotaciona (Img *img);
+void rotaciona (Img *img, int opc);
 
 /*void sharpening();
 
-void rotaciona ();
+void blurring ()
 
-void amplia ();
-
-void reduz ();*/
+*/

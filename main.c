@@ -2,8 +2,7 @@
 
 int main () {
 
-	int option, deg;
-	char dir;
+	int option, opc, zoom;
 	Img img_in;
 
 	abre_img (&img_in);
@@ -36,17 +35,23 @@ int main () {
 		break;*/
 
 		case 4:
-		rotaciona(&img_in);
+		printf("Digite a direção: (1 para 90°/Esquerda, 2 para 90°/Direita, 3 para 180°)\n");
+		scanf ("%d", &opc);
+		rotaciona(&img_in, opc);
 		break;
 
-	/*	case 5:
-		amplia();
+		case 5:
+		printf("Digite o tamanho do zoom: \n");
+		scanf ("%d", &zoom);
+		amplia(&img_in, zoom);
 		break;
 
 
 		case 6:
-		reduz();
-		break;*/
+		printf("Digite o quanto quer reduzir sua imagem: \n");
+		scanf ("%d", &zoom);
+		reduz(&img_in, zoom);
+		break;
 
 		case 7:
 		salva_img(&img_in);
